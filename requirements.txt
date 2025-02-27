@@ -2,6 +2,6 @@ fastapi
 uvicorn
 pydantic
 requests
-swisseph
+pyswisseph
 pytz
 openai
