@@ -4,4 +4,5 @@ pydantic
 requests
 pyswisseph
 pytz
-openai
+openai==0.28.0
+
