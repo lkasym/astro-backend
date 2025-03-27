@@ -4,10 +4,11 @@ import json
 def initialize_chatbot(
     kundali_json,
     openai_api_key,
+    user_dob,  # Add user DOB for personalized analysis
     model_id="ft:gpt-4o-2024-08-06:personal:kundali-analysis-2:ASW1lwhF"
 ):
     """
-    Initializes the chatbot with the provided Kundali data and system prompt
+    Initializes the chatbot with the provided Kundali data, system prompt, and user's DOB
     for thorough Vedic astrology analysis.
     """
     # Set your OpenAI API key
@@ -16,22 +17,23 @@ def initialize_chatbot(
     # Convert JSON data to a formatted string
     kundali_summary = json.dumps(kundali_json, indent=2)
 
-    # System prompt ensuring analysis of all relevant charts, aspects, dashas, etc.
+    # System prompt for detailed, personalized astrology analysis
     system_prompt = (
-        "You are a highly knowledgeable and precise Vedic astrologer. "
-        "Use the following Kundali data, including:\n"
+        f"You are a highly knowledgeable and precise Vedic astrologer. "
+        f"Use the following Kundali data, including the user's Date of Birth (DOB): {user_dob}\n"
         "• Divisional Charts (D1, D9, D10, D7, D6, etc.)\n"
         "• Planetary Aspects (Drishti)\n"
         "• Planetary Periods (Mahadasha, Antardasha)\n"
         "• Yogas and Doshas\n"
         "• Planetary Conjunctions and House Relationships\n"
         "• Rahu/Ketu Axis and Other Relevant Factors\n\n"
-        "When answering user questions:\n"
-        "1. Analyze each relevant chart and factor in detail.\n"
-        "2. Explain which planetary aspects and dasha periods are most relevant.\n"
-        "3. Identify any Yogas, Doshas, strengths, or weaknesses in planetary positions.\n"
-        "4. Focus on the user’s key concerns—do not provide unnecessary information.\n"
-        "5. Structure your responses in clear bullet points.\n\n"
+        "When answering user questions, please:\n"
+        "1. Take the user's Date of Birth (DOB) into account for personalized analysis.\n"
+        "2. Provide a deep, personalized analysis of planetary positions and aspects.\n"
+        "3. Analyze the user's Mahadasha and Antardasha, focusing on how they influence the specific question.\n"
+        "4. Dive into the meanings of key planetary positions and their impact on the user's life.\n"
+        "5. Use Vedic astrology principles to explain the timing of events and their potential outcomes.\n"
+        "6. Answer concisely, with detailed explanations of key factors involved in the analysis.\n\n"
         "Here is the Kundali data:\n\n"
         f"{kundali_summary}\n"
     )
@@ -63,7 +65,7 @@ def get_chatbot_response(
     )
     return response["choices"][0]["message"]["content"].strip()
 
-def handle_chatbot_interaction(kundali_json, user_question):
+def handle_chatbot_interaction(kundali_json, user_question, user_dob):
     """
     Handles the conversation by initializing and updating the conversation history
     with the user's question, then fetching a response from the model.
@@ -73,10 +75,11 @@ def handle_chatbot_interaction(kundali_json, user_question):
     if not openai_api_key:
         return "OpenAI API key not found in code."
 
-    # Initialize chatbot with system prompt and Kundali data
+    # Initialize chatbot with system prompt and Kundali data, including the DOB
     conversation_history, model_id = initialize_chatbot(
         kundali_json,
         openai_api_key,
+        
         model_id="ft:gpt-4o-2024-08-06:personal:kundali-analysis-2:ASW1lwhF"
     )
     
