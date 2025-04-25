@@ -4,7 +4,7 @@ import json
 def initialize_chatbot(
     kundali_json,
     openai_api_key,
-    user_dob,  # Add user DOB for personalized analysis
+    user_dob,
     model_id="ft:gpt-4o-2024-08-06:personal:kundali-analysis-2:ASW1lwhF"
 ):
     """
@@ -13,7 +13,7 @@ def initialize_chatbot(
     """
     # Set your OpenAI API key
     openai.api_key = openai_api_key
-    
+
     # Convert JSON data to a formatted string
     kundali_summary = json.dumps(kundali_json, indent=2)
 
@@ -38,13 +38,12 @@ def initialize_chatbot(
         f"{kundali_summary}\n"
     )
 
-    conversation_history, model_id = initialize_chatbot(
-    kundali_json,
-    openai_api_key,
-    user_dob,  # ← this was missing
-    model_id="ft:gpt-4o-2024-08-06:personal:kundali-analysis-2:ASW1lwhF"
-)
-
+    conversation_history = [
+        {
+            "role": "system",
+            "content": system_prompt
+        }
+    ]
 
     return conversation_history, model_id
 
@@ -55,32 +54,36 @@ def get_chatbot_response(
     """
     Sends the conversation history to the specified OpenAI model and returns the response.
     """
-    response = openai.ChatCompletion.create(
-        model=model_id,
-        messages=conversation_history,
-        temperature=0.8,
-        max_tokens=3000,
-        top_p=1.0,
-        frequency_penalty=0.1,
-        presence_penalty=0.2
-    )
-    return response["choices"][0]["message"]["content"].strip()
+    try:
+        response = openai.ChatCompletion.create(
+            model=model_id,
+            messages=conversation_history,
+            temperature=0.8,
+            max_tokens=3000,
+            top_p=1.0,
+            frequency_penalty=0.1,
+            presence_penalty=0.2
+        )
+        return response["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        return f"Error during OpenAI API call: {str(e)}"
 
 def handle_chatbot_interaction(kundali_json, user_question, user_dob):
     """
     Handles the conversation by initializing and updating the conversation history
     with the user's question, then fetching a response from the model.
     """
-    # Use your provided OpenAI API key (replace with your own if different)
+    # Set your OpenAI API key here
     openai_api_key = "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"
+    
     if not openai_api_key:
-        return "OpenAI API key not found in code."
+        return "OpenAI API key not found."
 
     # Initialize chatbot with system prompt and Kundali data, including the DOB
     conversation_history, model_id = initialize_chatbot(
         kundali_json,
         openai_api_key,
-        
+        user_dob,
         model_id="ft:gpt-4o-2024-08-06:personal:kundali-analysis-2:ASW1lwhF"
     )
     
