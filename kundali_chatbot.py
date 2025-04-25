@@ -38,12 +38,13 @@ def initialize_chatbot(
         f"{kundali_summary}\n"
     )
 
-    conversation_history = [
-        {
-            "role": "system",
-            "content": system_prompt
-        }
-    ]
+    conversation_history, model_id = initialize_chatbot(
+    kundali_json,
+    openai_api_key,
+    user_dob,  # ← this was missing
+    model_id="ft:gpt-4o-2024-08-06:personal:kundali-analysis-2:ASW1lwhF"
+)
+
 
     return conversation_history, model_id
 
